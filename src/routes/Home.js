@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dbService } from 'fbase';
+import Tweet from 'components/Tweet';
 
 const Home = ({ userObj }) => {
     const [tweet, setTweet] = useState('');
@@ -13,6 +14,10 @@ const Home = ({ userObj }) => {
             }));
             setTweets(tweetArray);
         });
+
+        return () => {
+            setTweets([]);
+        }
     }, []);
 
     const onSubmit = async (event) => {
@@ -45,9 +50,11 @@ const Home = ({ userObj }) => {
             </form>
             <div>
                 {tweets.map((doc) => (
-                    <div key={doc.id}>
-                        <h4>{doc.text}</h4>
-                    </div>
+                    <Tweet
+                        key={doc.id}
+                        tweetObj={doc}
+                        isOwner={doc.creatorId === userObj.uid}
+                    />
                 ))}
             </div>
         </div>
