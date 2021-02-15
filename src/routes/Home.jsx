@@ -9,17 +9,17 @@ const Home = ({ userObj }) => {
     const [attachment, setAttachment] = useState('');
 
     useEffect(() => {
-        dbService.collection('tweets').onSnapshot((snapshot) => {
-            const tweetArray = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setTweets(tweetArray);
-        });
+        const unsubscribe = dbService.collection('tweets')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot((snapshot) => {
+                const tweetArray = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setTweets(tweetArray);
+            });
 
-        return () => {
-            setTweets([]);
-        }
+        return () => unsubscribe();
     }, []);
 
     const onSubmit = async (event) => {
